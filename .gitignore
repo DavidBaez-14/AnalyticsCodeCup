@@ -1,0 +1,24 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Editor ###
+.idea
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+### macOS ###
+.DS_Store
+
+### Local env ###
+.env
+.env.local
+application-local.properties
