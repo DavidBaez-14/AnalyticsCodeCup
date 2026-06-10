@@ -71,4 +71,58 @@ public class Ms2InternalClient {
             return List.of();
         }
     }
+
+    /**
+     * Devuelve la lista de premios configurados para un torneo.
+     * Proyección de lectura desde MS2, sin schema propio.
+     * Cada elemento: { id, premioId, codigoCatalogo, nombreCatalogo, titulo,
+     *                 descripcion, monto, ganadorCedula, ganadorEquipoNombre, ... }
+     */
+    public List<Map<String, Object>> obtenerPremios(UUID torneoId) {
+        try {
+            return ms2InternalClient.get()
+                    .uri("/api/supercopa/internal/torneos/{id}/premios", torneoId)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (Exception e) {
+            log.error("Error pidiendo premios a MS2 (torneo={}): {}", torneoId, e.getMessage());
+            return List.of();
+        }
+    }
+
+    /**
+     * Asigna un ganador a un premio del torneo en MS2.
+     * Body: { cedula? , equipoTorneoId? }
+     */
+    public void asignarPremio(UUID torneoId, UUID torneoPremioId, Map<String, Object> body) {
+        try {
+            ms2InternalClient.post()
+                    .uri("/api/supercopa/internal/torneos/{id}/premios/{premioId}/asignar",
+                            torneoId, torneoPremioId)
+                    .body(body)
+                    .retrieve()
+                    .toBodilessEntity();
+            log.info("Premio {} asignado en MS2 para torneo {}", torneoPremioId, torneoId);
+        } catch (Exception e) {
+            log.error("Error asignando premio {} en MS2 (torneo={}): {}",
+                    torneoPremioId, torneoId, e.getMessage());
+        }
+    }
+
+    /**
+     * Devuelve la lista de partidos de un torneo.
+     * Cada elemento: { id, equipoLocalNombre, equipoVisitanteNombre,
+     *                 golesLocal, golesVisitante, fase, estado, ... }
+     */
+    public List<Map<String, Object>> obtenerPartidos(UUID torneoId) {
+        try {
+            return ms2InternalClient.get()
+                    .uri("/api/supercopa/internal/torneos/{id}/partidos", torneoId)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (Exception e) {
+            log.error("Error pidiendo partidos a MS2 (torneo={}): {}", torneoId, e.getMessage());
+            return List.of();
+        }
+    }
 }

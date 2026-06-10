@@ -1,0 +1,16 @@
+.git
+.gitignore
+.idea
+.mvn
+mvnw
+mvnw.cmd
+HELP.md
+README.md
+*.iml
+*.log
+target
+**/target
+db
+docs
+plan_ms4.md
+.envexample

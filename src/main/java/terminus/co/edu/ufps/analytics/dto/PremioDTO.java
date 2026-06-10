@@ -1,0 +1,29 @@
+package terminus.co.edu.ufps.analytics.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PremioDTO {
+    private String categoria;
+    private String alcance;
+    private String nombre;
+    private Integer monto;
+    private Integer orden;
+    private GanadorDTO ganador;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GanadorDTO {
+        private String cedula;
+        private String nombre;
+        private String equipoNombre;
+    }
+}

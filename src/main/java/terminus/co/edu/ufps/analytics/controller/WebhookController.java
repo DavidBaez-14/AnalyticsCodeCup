@@ -17,6 +17,7 @@ import terminus.co.edu.ufps.analytics.dto.WebhookPayload;
 import terminus.co.edu.ufps.analytics.model.WebhookLog;
 import terminus.co.edu.ufps.analytics.repository.WebhookLogRepository;
 import terminus.co.edu.ufps.analytics.service.SnapshotBuilderService;
+import terminus.co.edu.ufps.analytics.service.TorneoCerradoService;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,6 +29,7 @@ import java.util.UUID;
 public class WebhookController {
 
     private final SnapshotBuilderService snapshotBuilder;
+    private final TorneoCerradoService torneoCerradoService;
     private final WebhookLogRepository webhookLogRepo;
     private final ObjectMapper objectMapper;
 
@@ -57,6 +59,34 @@ public class WebhookController {
 
         // Reconstrucción asincrónica: respondemos 202 inmediatamente.
         snapshotBuilder.reconstruirAsync(payload.getTorneoId());
+
+        logEntry.setProcesadoEn(LocalDateTime.now());
+        webhookLogRepo.save(logEntry);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/webhooks/torneo-cerrado")
+    public ResponseEntity<Void> torneoCerrado(
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret,
+            @RequestBody WebhookPayload payload) {
+        if (expectedSecret == null || !expectedSecret.equals(secret)) {
+            log.warn("Webhook torneo-cerrado recibido con secret inválido");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (payload == null || payload.getTorneoId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        WebhookLog logEntry = WebhookLog.builder()
+                .tipo("torneo-cerrado")
+                .torneoId(payload.getTorneoId())
+                .partidoId(payload.getPartidoId())
+                .build();
+        try {
+            logEntry.setPayloadJson(objectMapper.writeValueAsString(payload));
+        } catch (Exception ignore) {}
+        webhookLogRepo.save(logEntry);
+
+        torneoCerradoService.procesarCierre(payload.getTorneoId());
 
         logEntry.setProcesadoEn(LocalDateTime.now());
         webhookLogRepo.save(logEntry);

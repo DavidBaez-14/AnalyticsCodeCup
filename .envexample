@@ -1,0 +1,22 @@
+# ============================================================
+# AnalyticsCodeCup (MS4) — Variables de entorno
+# Copiar como .env y llenar valores
+# ============================================================
+
+# Puerto del servidor
+SERVER_PORT=8084
+
+# Base de datos Supabase #3 (PostgreSQL)
+DB_URL=jdbc:postgresql://<supabase-3-host>:6543/postgres?prepareThreshold=0
+DB_USERNAME=postgres.<project-ref>
+DB_PASSWORD_MS4=<password>
+
+# URL del MS2 (supercopa) para reconstruir snapshots
+MS2_BASE_URL=http://localhost:8082
+
+# Secretos compartidos (deben coincidir con los de MS2)
+ANALYTICS_WEBHOOK_SECRET=dev-webhook-secret-change-in-prod
+INTERNAL_API_SECRET=dev-internal-secret-change-in-prod
+
+# URL del frontend para CORS
+FRONTEND_URL=http://localhost:5173
